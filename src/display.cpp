@@ -153,6 +153,18 @@ static bool display_update_epaper(int refreshMode, bool wait, bool writePlane = 
     } else {
         Log_info("Have valid previous image in EPD memory, doing partial refresh");
     }
+    // Fork-local: the Waveshare 4.26" is flagged BBEP_NEEDS_EXTRA_INIT in bb_epaper, so
+    // bbepWritePlane() sends the full init sequence *before* the pixel data (the panel
+    // ignores writes until it has been told its resolution). bbepRefresh() then skips a
+    // second init for REFRESH_FULL only -- fast and partial send their own init sequence
+    // *after* the data, re-running SSD16xx setup over the plane that was just written and
+    // rendering it as noise. Keep this panel on full refreshes.
+    if (bbep.getPanelType() == EP426_800x480 || bbep.getPanelType() == EP426_800x480_4GRAY) {
+        if (refreshMode != REFRESH_FULL) {
+            Log_info("EP426: forcing full refresh (requested mode %d is unsafe on this panel)", refreshMode);
+            refreshMode = REFRESH_FULL;
+        }
+    }
     bbep.refresh(refreshMode, wait);
     // The next update can be a partial update because the current is 1-bpp and stays in the EPD RAM
     bCanDoPartial = (bbep.getPanelType() == dpList[pDevice->panel_set][iTempProfile].OneBit);
