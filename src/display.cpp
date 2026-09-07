@@ -51,6 +51,13 @@ const TRMNL_DEVICE device_list[] =
   "xteink_x4",     8,    10,    21,  5,    4,   6,    0xff, 0xff, 3,     0,    0xff,    BATT_ADC,  EPD_426,
   "waveshare",     13,   14,    15,  26,   27,  25,   0xff, 0xff, 33,    0xff, 0xff,    BATT_ADC,  EPD_75,
   "waveshare_397", 11,   12,    10,  46,   9,   3,    41,   42,   0,     0xff, 0xff,    BATT_ADC,  EPD_397,
+  // Fork-local: DFRobot FireBeetle 2 ESP32-E driving a Waveshare 4.26" 800x480 panel.
+  // Button on GPIO 4 to GND with an external 10k pull-up to VCC, so it reads active-low
+  // like every other board here; GPIO 4 is RTC-capable, so ext0 wake works.
+  // Battery on GPIO 34 (ADC1_CH6, input-only and unaffected by WiFi) via the FireBeetle's
+  // onboard 1:2 divider, which is what BATT_ADC's *2 scaling already assumes. No load
+  // switch on the divider, hence batt_en 0xff.
+  "dfrobot_firebeetle_esp32e", 18, 23, 25,  14,   13,  26,   0xff, 0xff, 4,     34,   0xff,    BATT_ADC,  EPD_426,
   "seeed_sticky",  13,   14,    15,  17,   16,  18,   1,    0,    4,     0xff, 0xff,    BATT_BQ27220,  EPD_397,  
   "seeed_esp32c3", 8,    10,    3,   2,    5,   4,    0xff, 0xff, 9,     0xff, 0xff,    BATT_ADC,  EPD_75,
   "seeed_esp32s3", 7,    9,     2,   1,    4,   3,    0xff, 0xff, 0,     0xff, 0xff,    BATT_ADC,  EPD_75,
